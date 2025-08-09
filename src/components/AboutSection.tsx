@@ -7,7 +7,7 @@ export function AboutSection({ title }: AboutSectionProps) {
   const displayTitle = title || defaultTitle;
   
   return (
-    <section id="about" className="min-h-[60vh] md:h-[60vh] flex items-center justify-center bg-white px-4 sm:px-6 py-8 md:py-0">
+    <section id="about" className="min-h-[60vh] md:h-[60vh] flex items-center justify-center bg-gray-50 px-4 sm:px-6 py-8 md:py-0">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
         <div>
           <h1 

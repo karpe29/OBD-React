@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api, Project } from '../utils/api';
+import { Loader } from './ui/loader';
 
 interface Category {
   id: string;
@@ -11,6 +12,8 @@ export function WorkPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(true);
+  const [showContent, setShowContent] = useState(false);
 
   // Fixed category list based on user requirements
   const FIXED_CATEGORIES = [
@@ -54,11 +57,20 @@ export function WorkPage() {
         setCategories(fallbackCategories);
       } finally {
         setLoading(false);
+        // Hide loader and show content with delay
+        setTimeout(() => {
+          setShowLoader(false);
+        }, 500); // Small delay to see the loader
       }
     };
 
     loadProjects();
   }, []);
+
+  // Handle loader hide complete
+  const handleLoaderHideComplete = () => {
+    setShowContent(true);
+  };
 
   // Handle project click navigation
   const handleProjectClick = (project: Project) => {
@@ -76,23 +88,33 @@ export function WorkPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-white px-4 sm:px-6" style={{ paddingTop: 'clamp(15vh, 30vh, 30vh)' }}>
-      {/* Dots Section - Constrained Width */}
-      <div className="max-w-7xl mx-auto">
-        <div className="w-full">
-          <div className="grid grid-cols-2 sm:flex sm:justify-between items-start gap-4 sm:gap-0">
-            {displayCategories.map((category, index) => (
-              <div
-                key={category.id}
-                className={`cursor-pointer transition-colors duration-200 flex flex-col items-center justify-center min-h-[80px] sm:min-h-[60px] relative ${
-                  !loading 
-                    ? index === 0 
-                      ? 'fade-in-dot' 
-                      : index === 1 
-                        ? 'fade-in-dot-delay-1' 
-                        : 'fade-in-dot-delay-2'
-                    : 'opacity-0'
-                }`}
+    <>
+      {/* Breathing Loader */}
+      <Loader 
+        isVisible={showLoader}
+        onHideComplete={handleLoaderHideComplete}
+        size={50}
+        color="rgb(4, 0, 255)"
+        duration={2}
+      />
+
+      <div className="min-h-screen bg-white px-4 sm:px-6" style={{ paddingTop: 'clamp(15vh, 30vh, 30vh)' }}>
+        {/* Dots Section - Constrained Width */}
+        <div className="max-w-7xl mx-auto">
+          <div className="w-full">
+            <div className="grid grid-cols-2 sm:flex sm:justify-between items-start gap-4 sm:gap-0">
+              {displayCategories.map((category, index) => (
+                <div
+                  key={category.id}
+                  className={`cursor-pointer transition-colors duration-200 flex flex-col items-center justify-center min-h-[80px] sm:min-h-[60px] relative ${
+                    showContent 
+                      ? index === 0 
+                        ? 'fade-in-dot' 
+                        : index === 1 
+                          ? 'fade-in-dot-delay-1' 
+                          : 'fade-in-dot-delay-2'
+                      : 'opacity-0'
+                  }`}
                 style={{
                   flex: '1'
                 }}
@@ -135,7 +157,7 @@ export function WorkPage() {
       </div>
 
       {/* Project List Section - Full Width */}
-      {activeCategory && !loading && (
+      {activeCategory && showContent && (
         <div className="w-full transition-opacity duration-300 opacity-100" style={{ marginTop: 'clamp(15vh, 30vh, 30vh)' }}>
           <div className="space-y-3 sm:space-y-4">
             {displayCategories
@@ -202,6 +224,7 @@ export function WorkPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
