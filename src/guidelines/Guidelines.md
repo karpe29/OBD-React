@@ -1,6 +1,6 @@
 🔤 Typography
 Primary Fonts:
-Display / Logo Font: Helvetica (ALL CAPS, spaced)
+Display / Logo Font: Helvetica (ALL CAPS, spaced)  
 
 Body & UI Text: Graphik
 
