@@ -1,0 +1,27 @@
+name: Ping Supabase daily
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # 04:00 UTC daily
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase function health endpoint
+        env:
+          SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_PROJECT_ID" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "Secrets SUPABASE_PROJECT_ID and/or SUPABASE_ANON_KEY are not set" >&2
+            exit 1
+          fi
+          curl --fail --show-error --silent \
+            --retry 3 --retry-delay 5 --max-time 30 \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            "https://${SUPABASE_PROJECT_ID}.supabase.co/functions/v1/make-server-2a3badc1/health" | cat
+      - name: Success log
+        if: ${{ success() }}
+        run: echo "Supabase ping succeeded"
