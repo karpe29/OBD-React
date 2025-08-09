@@ -2,6 +2,7 @@ import { Header } from './components/Header';
 import { PageRouter } from './components/PageRouter';
 import { SetupNotice } from './components/SetupNotice';
 import { AdminDashboard } from './components/AdminDashboard';
+import { Loader } from './components/ui/loader';
 import { useNavigation } from './hooks/useNavigation';
 import { useFeaturedProjects } from './hooks/useFeaturedProjects';
 import { Project } from './utils/api';
@@ -17,11 +18,7 @@ export default function App() {
 
   // Loading state for main site pages (not admin)
   if (loading && currentPage === 'home') {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
-      </div>
-    );
+    return <Loader isVisible={true} />;
   }
 
   // Admin page - completely separate layout
