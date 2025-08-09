@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Header } from './components/Header';
+import { PageRouter } from './components/PageRouter';
+import { SetupNotice } from './components/SetupNotice';
+import { AdminDashboard } from './components/AdminDashboard';
+import { useNavigation } from './hooks/useNavigation';
+import { useFeaturedProjects } from './hooks/useFeaturedProjects';
+import { Project } from './utils/api';
 
-function App() {
+export default function App() {
+  const { currentPage, currentProject, navigateTo } = useNavigation();
+  const { featuredProjects, loading, error, setupRequired } = useFeaturedProjects();
+
+  // Handle project clicks from home page
+  const handleProjectClick = (project: Project) => {
+    navigateTo('project', project.id);
+  };
+
+  // Loading state for main site pages (not admin)
+  if (loading && currentPage === 'home') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  // Admin page - completely separate layout
+  if (currentPage === 'admin') {
+    return <AdminDashboard />;
+  }
+
+  // Main site layout
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="min-h-screen">
+      <Header />
+      
+      {/* Setup Notice - only show on home page */}
+      {setupRequired && currentPage === 'home' && (
+        <SetupNotice onSetupClick={() => navigateTo('admin')} />
+      )}
+      
+      <PageRouter 
+        currentPage={currentPage}
+        currentProject={currentProject}
+        featuredProjects={featuredProjects}
+        onProjectClick={handleProjectClick}
+      />
     </div>
   );
 }
-
-export default App;
