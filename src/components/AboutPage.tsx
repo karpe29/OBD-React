@@ -132,7 +132,7 @@ export function AboutPage() {
             {/* Photo */}
             <div className="w-48 h-48 sm:w-64 sm:h-64 mb-6 md:mb-8 overflow-hidden rounded-lg mx-auto lg:mx-0">
               <ImageWithFallback
-                src="/Founder.png"
+                src={`${import.meta.env.BASE_URL}Founder.png`}
                 alt="Ar. Shweta Arade"
                 className="w-full h-full object-cover"
               />

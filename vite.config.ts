@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // Determine base for GitHub Pages automatically during CI builds
 const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? ''
+const configuredBase = process.env.VITE_BASE?.trim()
 const isPagesProject =
   process.env.GITHUB_ACTIONS === 'true' &&
   !!repoName &&
@@ -11,7 +12,7 @@ const isPagesProject =
 
 export default defineConfig({
   plugins: [react()],
-  base: isPagesProject ? `/${repoName}/` : '/',
+  base: configuredBase ?? (isPagesProject ? `/${repoName}/` : '/'),
 })
 
 

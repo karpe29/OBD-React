@@ -3,11 +3,24 @@ import { useState, useEffect } from 'react';
 export function useNavigation() {
   const [currentPage, setCurrentPage] = useState('home');
   const [currentProject, setCurrentProject] = useState<string | null>(null);
+  const baseUrl = (import.meta as any).env?.BASE_URL || '/';
+
+  const normalizeBase = (base: string) => base.replace(/\/$/, '');
+  const normalizedBase = normalizeBase(baseUrl);
+  const stripBase = (pathname: string) =>
+    normalizedBase && pathname.startsWith(normalizedBase)
+      ? pathname.slice(normalizedBase.length) || '/'
+      : pathname;
+  const joinPath = (segment: string) => {
+    const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+    const sub = segment.replace(/^\//, '');
+    return base + sub;
+  };
 
   // Handle URL changes and navigation
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
+      const path = stripBase(window.location.pathname);
       if (path === '/contact') {
         setCurrentPage('contact');
         setCurrentProject(null);
@@ -43,11 +56,11 @@ export function useNavigation() {
     setCurrentProject(projectId || null);
     
     if (page === 'home') {
-      window.history.pushState({}, '', '/');
+      window.history.pushState({}, '', baseUrl);
     } else if (page === 'project' && projectId) {
-      window.history.pushState({}, '', `/project/${projectId}`);
+      window.history.pushState({}, '', joinPath(`project/${projectId}`));
     } else {
-      window.history.pushState({}, '', `/${page}`);
+      window.history.pushState({}, '', joinPath(page));
     }
   };
 
